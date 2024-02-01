@@ -36,9 +36,10 @@ class ToDoList(db.Model):
 
 class AddressBook(db.Model):
     address_id = db.Column(db.Integer, primary_key=True)
-    team_member_name = db.Column(db.String, nullable=False)
+    member_name = db.Column(db.String, nullable=False)
+    role_mbti = db.Column(db.Text, nullable=True)
+    image_url = db.Column(db.String, nullable=False)
     project = db.Column(db.String, nullable=False)
-    realization = db.Column(db.Text, nullable=True)
     member_id = db.Column(db.String, db.ForeignKey('member.member_id'), nullable=False)
 
 class Diary(db.Model):
@@ -76,6 +77,33 @@ def memo():
     
     return render_template('memo.html', data=current_page_memo, page_num=total_pages)
 
+
+    # 예시 Adress
+
+# 추가한 데이터를 화면에 표시
+@app.route("/AddressBook/")
+def member():
+        member_list = AddressBook.query.all()
+        return render_template('address.html', data=member_list)
+
+
+@app.route("/AddressBook/Add/",methods=["GET"])
+def add_member():
+    # form 에서 보낸 데이터 받아오기
+        member_name_receive = request.args.get("member_name")
+        role_mbti_receive = request.args.get("role_mbti")
+        image_url_receive = request.args.get("image_url")
+        address_id_receive = request.args.get("address_id")
+        project_receive = request.args.get("project")
+        member_id_receive = request.args.get("member_id")
+
+
+    # 데이터를 DB에 저장
+        adress = AddressBook (member_name=member_name_receive, role_mbti=role_mbti_receive, image_url=image_url_receive, address_id=address_id_receive, project=project_receive, member_id=member_id_receive)
+        db.session.add(adress)
+        db.session.commit()
+        print(project_receive)
+        return render_template('address.html')
 
 if __name__ == '__main__':
     app.run()
